@@ -1,0 +1,14 @@
+type: map
+mapping:
+  "next":
+    type: int
+    required: true
+  "prefix":
+    type: str
+    required: true
+  "clients":
+    type: map
+    mapping:
+      =:
+        type: str
+

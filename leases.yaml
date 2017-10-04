@@ -1,0 +1,11 @@
+# Next Address ID
+next: 1
+# IPV6 Prefix
+prefix: aaaa:bbbb:cccc:dd
+
+# Clients Leases and Reservation
+
+clients:
+#  client8: aaaa:bbbb:cccc:dd07
+#  client9: aaaa:bbbb:cccc:dd08
+
