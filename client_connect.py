@@ -45,7 +45,13 @@ class Leases():
 
   def get_address(self, client):
     """ Return address """
-    address = self.config['clients'].get(client)
+    address = None
+
+    try:
+      address = self.config['clients'].get(client)
+    except KeyError:
+      self.config['clients']={}
+
     if address is None:
       address = "{0}{1:02x}".format(self.config['prefix'], self.config['next'])
       self.config['clients'][client] = address
