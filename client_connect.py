@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
-import warnings
-import sys
+
+import os, warnings, sys
+
 from textwrap import dedent
 import ruamel
 from ruamel.yaml import YAML
 from pykwalify.core import Core
 
 class Leases():
-  LEASES_FILE = 'leases.yaml'
-  SCHEMA = 'schema.yaml'
+  FOLDER = '/usr/local/openvpn_scripts/'
+  LEASES_FILE = FOLDER + 'leases.yaml'
+  SCHEMA = FOLDER + 'schema.yaml'
 
   def __init__(self):
     self.config = None
@@ -42,6 +44,7 @@ class Leases():
     stream = open(Leases.LEASES_FILE, 'w')
     self.yaml.default_flow_style = False
     self.yaml.dump(self.config, stream)
+    stream.close()
 
   def get_address(self, client):
     """ Return address """
@@ -60,17 +63,20 @@ class Leases():
 
   def save_file(self, address, filename):
     output = """\
-    iroute-ipv6 {0}::/64
-    ifconfig-ipv6-push {0}::1/128
+      iroute-ipv6 {0}::/64
+      push "setenv-safe RADVD {0}::/64"    
     """.format(address)
 
     stream = open(filename, 'w')
     stream.write(dedent(output))
     stream.close()
 
-CLIENT = sys.argv[1]
-IP = sys.argv[2]
-FILE = sys.argv[3]
+print ('Invoked client_connect with {}'.format(str(sys.argv)))
+
+CLIENT = os.environ.get ('common_name')
+FILE = sys.argv[1]
+
+print ('Client common name {}'.format(CLIENT))
 
 L = Leases()
 ADDRESS = L.get_address(CLIENT)
