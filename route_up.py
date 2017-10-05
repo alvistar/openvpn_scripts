@@ -56,5 +56,5 @@ file = open('/usr/local/etc/radvd.conf', 'w')
 file.write(CONFIG)
 file.close()
 
-call(["/usr/sbin/service", "radvd onerestart"])
+call(["/usr/sbin/service", "radvd", "onerestart"])
 
