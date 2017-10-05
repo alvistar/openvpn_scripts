@@ -22,16 +22,16 @@ class Leases:
         self.read_config()
         self.supernet = ipaddress.IPv6Network(self.config['supernet'])
 
-        self.start_subnet = ipaddress.IPv6Network(self.config['start_subnet']) if self.config[
-                                                                                      'start_subnet'] is not None else next(
-            self.supernet.subnets(new_prefix=64))
+        if 'clients' not in self.config:
+            self.config['clients'] = {}
+
+        self.start_subnet = ipaddress.IPv6Network(self.config['start_subnet']) \
+            if self.config['start_subnet'] is not None \
+            else next(self.supernet.subnets(new_prefix=64))
 
         self.available_subnets = {k: None for k in self.supernet.subnets(new_prefix=64) if k >= self.start_subnet}
         tmp = {ipaddress.IPv6Network(k): v for v, k in self.config['clients'].items()}
         self.available_subnets = {**self.available_subnets, **tmp}
-
-    def init_config(self):
-        self.config = {'next': 1, 'clients': {}, 'prefix': ''}
 
     def read_config(self):
         try:
@@ -45,10 +45,6 @@ class Leases:
 
         except IOError:
             pass
-
-        if self.config is None:
-            self.init_config()
-            self.write_config()
 
     def write_config(self):
         stream = open(Leases.LEASES_FILE, 'w')

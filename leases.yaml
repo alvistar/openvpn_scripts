@@ -1,11 +1,12 @@
-# Next Address ID
-next: 1
-# IPV6 Prefix
-prefix: aaaa:bbbb:cccc:dd
+#Must be a /56 ipv6 network
+supernet: aaaa:bbbb:cccc:dd00::/56
 
-# Clients Leases and Reservation
+#First subnet to start /64
+start_subnet: aaaa:bbbb:cccc:dd05::/64
+
+#clients:
+# client22: aaaa:bbbb:cccc:dd05::/64
+# ...
 
 clients:
-#  client8: aaaa:bbbb:cccc:dd07
-#  client9: aaaa:bbbb:cccc:dd08
-
+  clientAlex: aaaa:bbbb:cccc:dd05::/64
