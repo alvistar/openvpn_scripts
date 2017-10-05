@@ -49,6 +49,13 @@ interface em1
 		AdvRouterAddr off;
 	};
 
+#Passing Google DNS Servers
+
+        RDNSS 2001:4860:4860::8888 2001:4860:4860::8844
+        {
+                AdvRDNSSLifetime 30;
+        };
+
 };
 """).substitute(ADDRESS=ADDR)
 
