@@ -44,8 +44,7 @@ The wan interface will send then a ia-nd for getting a standard address.
 Unfortunately there's no possibility to set DUID from the gui and you
 will need to do from console.
 
-```shell
-echo 00:03:XX:XX:... | awk '{ gsub(":"," "); printf "0: 0a 00 %s\n", $0 }' | xxd -r > dhcp6c_duid
+```shellecho 00:03:XX:XX:... | awk '{ gsub(":"," "); printf "0: 0a 00 %s\n", $0 }' | xxd -r > dhcp6c_duid
 ```
 
 Now from the web interface you need to set to interface: [WAN]
@@ -66,7 +65,7 @@ ipv6.google.com
 ping6 ipv6.google.com
 ```
 
-## Network setup
+## Overall Network setup
 
 Here's the setup we want to achieve:
 - Cloud Server (Opnsense on online.net) will act as an Openvpn Server
@@ -90,8 +89,71 @@ Here's the setup we want to achieve:
 
 ![Alt text](/images/NetworkSetup.png?raw=true "Network Diagram")
 
+## Cloud Server setup
+Here's the config for openvpn server:
+- Protocol TCP and port 443 (this for better firewall compatibility)
+- Set **Peer Certificate Authority** and **Server Certificate**
+- **Encryption algorithm** AES-256-CBC
+- **TLS Authentication** disabled
+- **IPV4 Tunnel Network** 10.0.8.0/24
+- **IPV6 Tunnel Network** prefix:FF::/64
+- **IPV6 Local Network** 2000::/3 - for external ipv6 routing
+- **IPV6 Remote Network** prefix::/56 - we send all the /56 traffic
+  throught the ovpn interface
+- **Address pool** enabled
+- **Advanced** "client-connect /usr/local/openvpn_scripts/client_connect.sh"
+(without quotes)
 
+Now it's important to have the script in the above directory.
 
+The script basically will work as a dhcp, it will take the common name
+from client certificate and it will lease a /64 subnet.
+
+What it does specifically is setting up a variable RADVD to the subnet
+to deliver and pass to the openvpn client.
+
+Additionally it will setup also internal route for openvpn: all
+prefix/56 goes through openvpn but then we need to know which client has
+which /64 subnet.
+
+## Edge Router setup
+First set the LAN interface IPV6 configuration type to SLAAC.
+
+Openvpn client setup:
+- Protocol TCP and port 443
+- Setup **Client Certificate** and **Peer Certificate Authority**
+- **TLS Authentication** disabled
+- **Advanced**  "route-up /usr/local/openvpn_scripts/route_up.sh"
+(without quotes)
+
+The script need to be placed in the above folder.
+
+The script will get the RADVD variable, it will write RADVD
+configuration and (re)start the server.
+
+### Some diagnostic
+Check the interface addresses, particularly if LAN got its IPV6 address.
+
+```
+ifconfig
+```
+
+Then ping.
+```shell
+ping6 ipv6.google.com
+```
+
+Then we can check if routing works also for lan interface.
+
+```shell
+ping6 -S LAN_IPV6_ADDRESS ipv6.google.com
+```
+
+And have a look to what packets radvd is sending out:
+
+```shell
+radvdump
+```
 
 
 
