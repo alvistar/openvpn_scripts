@@ -1,4 +1,4 @@
-# OPENVN SCRIPTS FOR OPNSENSE
+# IPV6 Tunneling with Openvpn and Opnsense
 A collection of scripts to create site to site IPV6 tunnels from a
 gateway with ipv4 only network
 ## Rationale
