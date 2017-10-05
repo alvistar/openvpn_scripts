@@ -1,13 +1,13 @@
 type: map
 mapping:
-  "next":
-    type: int
-    required: true
-  "prefix":
+  "supernet":
     type: str
     required: true
+  "start_subnet":
+    type: str
   "clients":
     type: map
+    required: true
     mapping:
       =:
         type: str
